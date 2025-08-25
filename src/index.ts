@@ -104,3 +104,10 @@ app.listen(PORT, (error: any) => {
     }
     console.log(`MCP Stateless Streamable HTTP Server listening on port ${PORT}`);
 });
+
+//TODO:
+// 1. Create seprate files: Server, app, OWAPIClient.
+// 2. Test end points ysing inyegrated postman, eq
+// 3. Implmement LLM client.
+// 4. Try renaming repo and app.
+// 5. Decrease dev container image size. rm .devcontain fol n chk once.
