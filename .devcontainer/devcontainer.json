@@ -1,6 +1,17 @@
 {
-  "image": "mcr.microsoft.com/devcontainers/universal:2",
-  "features": {
-    "ghcr.io/devcontainers-community/npm-features/typescript:1": {}
-  }
+  "name": "My Node/TS Dev Container ",
+  "image": "mcr.microsoft.com/devcontainers/typescript-node", // Or another Node.js image, version eg: ':18' infront
+
+  "customizations": {
+    "vscode": {
+      "settings": {
+        // Add any VS Code settings you want
+      },
+      "extensions": [
+        // Add any VS Code extensions you want to be pre-installed
+      ]
+    }
+  },
+
+  "postCreateCommand": "if [ ! -f 'node_modules/.initialized' ]; then pnpm install && touch node_modules/.initialized; fi"
 }
