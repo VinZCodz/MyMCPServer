@@ -1,10 +1,13 @@
 import express, { Request, Response } from 'express';
 import { getServer, getTransport } from "./server.js";
+import dotenv from 'dotenv';
 
-const PORT = 3000;
+dotenv.config();
 
 const app = express();
 app.use(express.json());
+
+const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, (error) => {
   if (error) {
@@ -32,15 +35,15 @@ app.post('/mcp', async (req: Request, res: Response) => {
     const server = getServer();
     const transport = getTransport();
 
-    await server.connect(transport);
-    await transport.handleRequest(req, res, req.body);
-
-    res.on('close', () => {
+      res.on('close', () => {
       console.log('Request closed');
       transport.close();
       server.close();
     });
 
+    await server.connect(transport);
+    await transport.handleRequest(req, res, req.body);
+    
   } catch (error) {
     console.error('Error handling MCP request:', error);
     if (!res.headersSent) {
