@@ -1,65 +1,59 @@
 import express, { Request, Response } from 'express';
-import {getServer, getTransport} from "./server";
+import { getServer, getTransport } from "./server.js";
+
+const PORT = 3000;
 
 const app = express();
 app.use(express.json());
 
-function setupServer() {
-  app.get('/mcp', async (req: Request, res: Response) => {
-    console.log('Received GET MCP request');
-    
-    res.writeHead(405).end(JSON.stringify({
-      jsonrpc: "2.0",
-      error: {
-        code: -32000,
-        message: "Method not allowed."
-      },
-      id: null
-    }));
-  });
-  
-  app.post('/mcp', async (req: Request, res: Response) => {
-    try {
-      const server = getServer();
-      const transport = getTransport();
-  
-      await server.connect(transport);
-      await transport.handleRequest(req, res, req.body);
-  
-      res.on('close', () => {
-        console.log('Request closed');
-        transport.close();
-        server.close();
-      });
-  
-    } catch (error) {
-      console.error('Error handling MCP request:', error);
-      if (!res.headersSent) {
-        res.status(500).json({
-          jsonrpc: '2.0',
-          error: {
-            code: -32603,
-            message: 'Internal server error',
-          },
-          id: null,
-        });
-      }
-    }
-  });
-};
+app.listen(PORT, (error) => {
+  if (error) {
+    console.error('Failed to start server:', error);
+    process.exit(1);
+  }
+  console.log(`MCP Stateless Streamable HTTP Server listening on port ${PORT}`);
+});
 
-const PORT = 3000;
-setupServer().then(() => {
-  app.listen(PORT, (error) => {
-    if (error) {
-      console.error('Failed to start server:', error);
-      process.exit(1);
+app.get('/mcp', async (req: Request, res: Response) => {
+  console.log('Received GET MCP request');
+
+  res.writeHead(405).end(JSON.stringify({
+    jsonrpc: "2.0",
+    error: {
+      code: -32000,
+      message: "Method not allowed."
+    },
+    id: null
+  }));
+});
+
+app.post('/mcp', async (req: Request, res: Response) => {
+  try {
+    const server = getServer();
+    const transport = getTransport();
+
+    await server.connect(transport);
+    await transport.handleRequest(req, res, req.body);
+
+    res.on('close', () => {
+      console.log('Request closed');
+      transport.close();
+      server.close();
+    });
+
+  } catch (error) {
+    console.error('Error handling MCP request:', error);
+    if (!res.headersSent) {
+      res.status(500).json({
+        jsonrpc: '2.0',
+        error: {
+          code: -32603,
+          message: 'Internal server error',
+        },
+        id: null,
+      });
     }
-    console.log(`MCP Stateless Streamable HTTP Server listening on port ${PORT}`);
-  });
-}).catch(error => {
-  console.error('Failed to set up the server:', error);
-  process.exit(1);
+  }
 });
 
 //TODO:

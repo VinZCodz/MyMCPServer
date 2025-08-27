@@ -1,6 +1,6 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
-import {makeOWRequest} from "./helper";
+import {makeOWRequest} from "./helper.js";
 import { z } from 'zod';
 
 export function getServer() {
